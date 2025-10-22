@@ -1,0 +1,18 @@
+{
+  "Transformer": {
+    "CER": 103.8338658146965,
+    "WER": 855.2631578947368,
+    "Acc": 0.0,
+    "AvgLoss": 0.0,
+    "AvgTimePerBatch": 0.6691247054508754,
+    "TotalSamples": 20
+  },
+  "TCN": {
+    "CER": 116.93290734824282,
+    "WER": 963.1578947368421,
+    "Acc": 0.0,
+    "AvgLoss": 0.0,
+    "AvgTimePerBatch": 0.7240127154758998,
+    "TotalSamples": 20
+  }
+}

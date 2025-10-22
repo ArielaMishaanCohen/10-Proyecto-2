@@ -1,0 +1,177 @@
+📁 Guardando salida en: /Users/arielamishaancohen/Documents/UVG/Clases/Semestre 8 (2025)/Data Science/Proyectos y Tareas/10 Proyecto 2 TEMPORAL/asl_results/run-20251020-163652
+================================================================================
+🚀 COMPARACIÓN DE MODELOS: TRANSFORMER vs TCN
+   ASL Fingerspelling Recognition
+================================================================================
+
+================================================================================
+📂 FASE 1: CARGA Y PREPARACIÓN DE DATOS
+================================================================================
+📂 Cargando metadata...
+✅ Dataset: 100 secuencias
+
+✅ Split completado: train=80, val=20
+
+🔄 Creando datasets...
+
+================================================================================
+🤖 FASE 2: ENTRENAMIENTO DEL TRANSFORMER
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: Transformer
+============================================================
+
+  📈 Época 1/6:
+     Train Loss: 1.1846
+     Val Loss: 3.7606
+     Time: 43.13s
+     LR: 9.97e-03
+
+  📈 Época 2/6:
+     Train Loss: 1.1279
+     Val Loss: 3.6809
+     Time: 41.30s
+     LR: 9.94e-03
+
+  📈 Época 3/6:
+     Train Loss: 1.1113
+     Val Loss: 3.4818
+     Time: 40.91s
+     LR: 9.92e-03
+
+  📈 Época 4/6:
+     Train Loss: 1.0899
+     Val Loss: 3.4059
+     Time: 41.01s
+     LR: 9.89e-03
+
+  📈 Época 5/6:
+     Train Loss: 1.0749
+     Val Loss: 3.3927
+     Time: 40.85s
+     LR: 9.86e-03
+
+  📈 Época 6/6:
+     Train Loss: 1.0647
+     Val Loss: 3.3351
+     Time: 41.29s
+     LR: 9.83e-03
+
+================================================================================
+🔥 FASE 3: ENTRENAMIENTO DEL TCN
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: TCN
+============================================================
+
+  📈 Época 1/6:
+     Train Loss: 1.1303
+     Val Loss: 3.7558
+     Time: 40.41s
+     LR: 9.97e-03
+
+  📈 Época 2/6:
+     Train Loss: 1.1355
+     Val Loss: 3.7417
+     Time: 40.03s
+     LR: 9.94e-03
+
+  📈 Época 3/6:
+     Train Loss: 1.1182
+     Val Loss: 3.6748
+     Time: 40.41s
+     LR: 9.92e-03
+
+  📈 Época 4/6:
+     Train Loss: 1.1130
+     Val Loss: 3.6462
+     Time: 41.05s
+     LR: 9.89e-03
+
+  📈 Época 5/6:
+     Train Loss: 1.1073
+     Val Loss: 3.6667
+     Time: 42.20s
+     LR: 9.86e-03
+
+  📈 Época 6/6:
+     Train Loss: 1.1014
+     Val Loss: 3.6503
+     Time: 41.07s
+     LR: 9.83e-03
+
+================================================================================
+📊 FASE 4: EVALUACIÓN DE MODELOS
+================================================================================
+
+============================================================
+🔍 Evaluando modelo: Transformer
+============================================================
+
+📊 Resultados de Transformer:
+   CER (Character Error Rate): 103.83%
+   WER (Word Error Rate): 855.26%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.669s
+   Total samples: 20
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'mio-footwear/refugee'
+   Pred: '5ww384-8 od.t'
+
+============================================================
+🔍 Evaluando modelo: TCN
+============================================================
+
+📊 Resultados de TCN:
+   CER (Character Error Rate): 116.93%
+   WER (Word Error Rate): 963.16%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.724s
+   Total samples: 20
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'mio-footwear/refugee'
+   Pred: '2@5'
+
+================================================================================
+📈 FASE 5: GENERACIÓN DE VISUALIZACIONES
+================================================================================
+✅ Gráfica guardada: ./asl_results/training_comparison.png
+✅ Gráfica guardada: ./asl_results/metrics_comparison.png
+✅ Gráfica guardada: ./asl_results/error_analysis.png
+
+================================================================================
+🏆 RESUMEN FINAL Y CONCLUSIONES
+================================================================================
+
+📊 COMPARACIÓN DE MÉTRICAS:
+
+Métrica              Transformer     TCN             Mejor          
+-----------------------------------------------------------------
+CER (%)              103.83          116.93          Transformer    
+WER (%)              855.26          963.16          Transformer    
+Accuracy (%)         0.00            0.00            TCN            
+Avg Loss             0.00            0.00            TCN            
+
+⏱️ TIEMPO DE ENTRENAMIENTO:
+   Transformer: 248.49s (4.14 min)
+   TCN: 245.17s (4.09 min)
+
+💾 ARCHIVOS GENERADOS:
+   📁 Directorio: ./asl_results
+   📊 training_comparison.png
+   📊 metrics_comparison.png
+   📊 error_analysis.png
+
+================================================================================
+✅ ANÁLISIS COMPLETADO
+================================================================================
