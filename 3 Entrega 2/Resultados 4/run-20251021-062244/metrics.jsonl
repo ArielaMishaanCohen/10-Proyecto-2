@@ -1,0 +1,2 @@
+{"group": "Transformer", "CER": 89.86830553116769, "WER": 466.97080291970804, "Acc": 0.0, "AvgLoss": 0.0, "AvgTimePerBatch": 0.8999837207794189, "TotalSamples": 200, "time": "2025-10-21T17:53:12.521408"}
+{"group": "TCN", "CER": 108.16505706760316, "WER": 552.2810218978102, "Acc": 0.0, "AvgLoss": 0.0, "AvgTimePerBatch": 0.8912845134735108, "TotalSamples": 200, "time": "2025-10-21T17:54:34.329679"}

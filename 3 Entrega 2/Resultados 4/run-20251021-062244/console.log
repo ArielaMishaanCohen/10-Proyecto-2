@@ -1,0 +1,705 @@
+📁 Guardando salida en: /Users/arielamishaancohen/Documents/UVG/Clases/Semestre 8 (2025)/Data Science/Proyectos y Tareas/10 Proyecto 2 TEMPORAL/asl_results/run-20251021-062244
+================================================================================
+🚀 COMPARACIÓN DE MODELOS: TRANSFORMER vs TCN
+   ASL Fingerspelling Recognition
+================================================================================
+
+================================================================================
+📂 FASE 1: CARGA Y PREPARACIÓN DE DATOS
+================================================================================
+📂 Cargando metadata...
+✅ Dataset: 1000 secuencias
+
+✅ Split completado: train=800, val=200
+
+🔄 Creando datasets...
+
+================================================================================
+🤖 FASE 2: ENTRENAMIENTO DEL TRANSFORMER
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: Transformer
+============================================================
+
+  📈 Época 1/50:
+     Train Loss: 1.6792
+     Val Loss: 2.7586
+     Time: 414.79s
+     LR: 9.90e-03
+
+  📈 Época 2/50:
+     Train Loss: 1.5654
+     Val Loss: 2.5139
+     Time: 411.39s
+     LR: 9.79e-03
+
+  📈 Época 3/50:
+     Train Loss: 1.5067
+     Val Loss: 2.4674
+     Time: 413.63s
+     LR: 9.69e-03
+
+  📈 Época 4/50:
+     Train Loss: 1.4718
+     Val Loss: 2.4089
+     Time: 413.32s
+     LR: 9.59e-03
+
+  📈 Época 5/50:
+     Train Loss: 1.4502
+     Val Loss: 2.3791
+     Time: 413.85s
+     LR: 9.49e-03
+
+  📈 Época 6/50:
+     Train Loss: 1.4323
+     Val Loss: 2.3614
+     Time: 413.89s
+     LR: 9.39e-03
+
+  📈 Época 7/50:
+     Train Loss: 1.4183
+     Val Loss: 2.3413
+     Time: 414.75s
+     LR: 9.29e-03
+
+  📈 Época 8/50:
+     Train Loss: 1.4074
+     Val Loss: 2.3037
+     Time: 414.62s
+     LR: 9.19e-03
+
+  📈 Época 9/50:
+     Train Loss: 1.3979
+     Val Loss: 2.2866
+     Time: 414.33s
+     LR: 9.10e-03
+
+  📈 Época 10/50:
+     Train Loss: 1.3893
+     Val Loss: 2.2677
+     Time: 415.22s
+     LR: 9.00e-03
+
+  📈 Época 11/50:
+     Train Loss: 1.3812
+     Val Loss: 2.2548
+     Time: 415.76s
+     LR: 8.91e-03
+
+  📈 Época 12/50:
+     Train Loss: 1.3744
+     Val Loss: 2.2248
+     Time: 417.26s
+     LR: 8.81e-03
+
+  📈 Época 13/50:
+     Train Loss: 1.3678
+     Val Loss: 2.2099
+     Time: 421.91s
+     LR: 8.72e-03
+
+  📈 Época 14/50:
+     Train Loss: 1.3618
+     Val Loss: 2.2031
+     Time: 415.73s
+     LR: 8.63e-03
+
+  📈 Época 15/50:
+     Train Loss: 1.3562
+     Val Loss: 2.1864
+     Time: 416.54s
+     LR: 8.54e-03
+
+  📈 Época 16/50:
+     Train Loss: 1.3509
+     Val Loss: 2.1664
+     Time: 418.21s
+     LR: 8.45e-03
+
+  📈 Época 17/50:
+     Train Loss: 1.3459
+     Val Loss: 2.1609
+     Time: 415.40s
+     LR: 8.36e-03
+
+  📈 Época 18/50:
+     Train Loss: 1.3411
+     Val Loss: 2.1630
+     Time: 415.92s
+     LR: 8.27e-03
+
+  📈 Época 19/50:
+     Train Loss: 1.3365
+     Val Loss: 2.1361
+     Time: 414.95s
+     LR: 8.19e-03
+
+  📈 Época 20/50:
+     Train Loss: 1.3322
+     Val Loss: 2.1523
+     Time: 416.15s
+     LR: 8.10e-03
+
+  📈 Época 21/50:
+     Train Loss: 1.3282
+     Val Loss: 2.1305
+     Time: 416.90s
+     LR: 8.02e-03
+
+  📈 Época 22/50:
+     Train Loss: 1.3242
+     Val Loss: 2.1168
+     Time: 416.36s
+     LR: 7.93e-03
+
+  📈 Época 23/50:
+     Train Loss: 1.3204
+     Val Loss: 2.1022
+     Time: 416.55s
+     LR: 7.85e-03
+
+  📈 Época 24/50:
+     Train Loss: 1.3169
+     Val Loss: 2.0990
+     Time: 416.59s
+     LR: 7.77e-03
+
+  📈 Época 25/50:
+     Train Loss: 1.3133
+     Val Loss: 2.1064
+     Time: 417.41s
+     LR: 7.68e-03
+
+  📈 Época 26/50:
+     Train Loss: 1.3098
+     Val Loss: 2.0920
+     Time: 415.98s
+     LR: 7.60e-03
+
+  📈 Época 27/50:
+     Train Loss: 1.3065
+     Val Loss: 2.0636
+     Time: 417.11s
+     LR: 7.52e-03
+
+  📈 Época 28/50:
+     Train Loss: 1.3031
+     Val Loss: 2.0703
+     Time: 416.83s
+     LR: 7.45e-03
+
+  📈 Época 29/50:
+     Train Loss: 1.3002
+     Val Loss: 2.0613
+     Time: 416.58s
+     LR: 7.37e-03
+
+  📈 Época 30/50:
+     Train Loss: 1.2969
+     Val Loss: 2.0433
+     Time: 416.95s
+     LR: 7.29e-03
+
+  📈 Época 31/50:
+     Train Loss: 1.2940
+     Val Loss: 2.0506
+     Time: 417.28s
+     LR: 7.21e-03
+
+  📈 Época 32/50:
+     Train Loss: 1.2910
+     Val Loss: 2.0454
+     Time: 416.50s
+     LR: 7.14e-03
+
+  📈 Época 33/50:
+     Train Loss: 1.2883
+     Val Loss: 2.0438
+     Time: 416.33s
+     LR: 7.06e-03
+
+  📈 Época 34/50:
+     Train Loss: 1.2855
+     Val Loss: 2.0322
+     Time: 416.58s
+     LR: 6.99e-03
+
+  📈 Época 35/50:
+     Train Loss: 1.2826
+     Val Loss: 2.0185
+     Time: 415.29s
+     LR: 6.92e-03
+
+  📈 Época 36/50:
+     Train Loss: 1.2802
+     Val Loss: 2.0350
+     Time: 415.77s
+     LR: 6.84e-03
+
+  📈 Época 37/50:
+     Train Loss: 1.2776
+     Val Loss: 1.9911
+     Time: 415.12s
+     LR: 6.77e-03
+
+  📈 Época 38/50:
+     Train Loss: 1.2751
+     Val Loss: 2.0270
+     Time: 415.58s
+     LR: 6.70e-03
+
+  📈 Época 39/50:
+     Train Loss: 1.2726
+     Val Loss: 2.0115
+     Time: 415.81s
+     LR: 6.63e-03
+
+  📈 Época 40/50:
+     Train Loss: 1.2704
+     Val Loss: 1.9869
+     Time: 415.04s
+     LR: 6.56e-03
+
+  📈 Época 41/50:
+     Train Loss: 1.2678
+     Val Loss: 1.9767
+     Time: 416.59s
+     LR: 6.49e-03
+
+  📈 Época 42/50:
+     Train Loss: 1.2653
+     Val Loss: 1.9741
+     Time: 416.62s
+     LR: 6.42e-03
+
+  📈 Época 43/50:
+     Train Loss: 1.2630
+     Val Loss: 1.9706
+     Time: 415.87s
+     LR: 6.36e-03
+
+  📈 Época 44/50:
+     Train Loss: 1.2607
+     Val Loss: 1.9575
+     Time: 415.71s
+     LR: 6.29e-03
+
+  📈 Época 45/50:
+     Train Loss: 1.2585
+     Val Loss: 1.9752
+     Time: 415.98s
+     LR: 6.22e-03
+
+  📈 Época 46/50:
+     Train Loss: 1.2563
+     Val Loss: 1.9844
+     Time: 416.54s
+     LR: 6.16e-03
+
+  📈 Época 47/50:
+     Train Loss: 1.2544
+     Val Loss: 1.9545
+     Time: 416.82s
+     LR: 6.09e-03
+
+  📈 Época 48/50:
+     Train Loss: 1.2523
+     Val Loss: 1.9518
+     Time: 417.34s
+     LR: 6.03e-03
+
+  📈 Época 49/50:
+     Train Loss: 1.2502
+     Val Loss: 1.9398
+     Time: 415.61s
+     LR: 5.97e-03
+
+  📈 Época 50/50:
+     Train Loss: 1.2481
+     Val Loss: 1.9323
+     Time: 413.93s
+     LR: 5.90e-03
+
+================================================================================
+🔥 FASE 3: ENTRENAMIENTO DEL TCN
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: TCN
+============================================================
+
+  📈 Época 1/50:
+     Train Loss: 1.6856
+     Val Loss: 3.0724
+     Time: 407.72s
+     LR: 9.90e-03
+
+  📈 Época 2/50:
+     Train Loss: 1.6247
+     Val Loss: 3.0795
+     Time: 404.67s
+     LR: 9.79e-03
+
+  📈 Época 3/50:
+     Train Loss: 1.6211
+     Val Loss: 3.0713
+     Time: 405.54s
+     LR: 9.69e-03
+
+  📈 Época 4/50:
+     Train Loss: 1.6192
+     Val Loss: 3.0708
+     Time: 405.45s
+     LR: 9.59e-03
+
+  📈 Época 5/50:
+     Train Loss: 1.6172
+     Val Loss: 3.0811
+     Time: 405.50s
+     LR: 9.49e-03
+
+  📈 Época 6/50:
+     Train Loss: 1.6160
+     Val Loss: 3.0672
+     Time: 405.95s
+     LR: 9.39e-03
+
+  📈 Época 7/50:
+     Train Loss: 1.6149
+     Val Loss: 3.0784
+     Time: 406.76s
+     LR: 9.29e-03
+
+  📈 Época 8/50:
+     Train Loss: 1.6141
+     Val Loss: 3.0772
+     Time: 405.61s
+     LR: 9.19e-03
+
+  📈 Época 9/50:
+     Train Loss: 1.6130
+     Val Loss: 3.0680
+     Time: 404.23s
+     LR: 9.10e-03
+
+  📈 Época 10/50:
+     Train Loss: 1.6133
+     Val Loss: 3.0696
+     Time: 404.49s
+     LR: 9.00e-03
+
+  📈 Época 11/50:
+     Train Loss: 1.6125
+     Val Loss: 3.0449
+     Time: 409.63s
+     LR: 8.91e-03
+
+  📈 Época 12/50:
+     Train Loss: 1.6110
+     Val Loss: 3.0407
+     Time: 412.24s
+     LR: 8.81e-03
+
+  📈 Época 13/50:
+     Train Loss: 1.6094
+     Val Loss: 3.0408
+     Time: 412.77s
+     LR: 8.72e-03
+
+  📈 Época 14/50:
+     Train Loss: 1.6090
+     Val Loss: 3.0276
+     Time: 412.87s
+     LR: 8.63e-03
+
+  📈 Época 15/50:
+     Train Loss: 1.6082
+     Val Loss: 3.0653
+     Time: 417.50s
+     LR: 8.54e-03
+
+  📈 Época 16/50:
+     Train Loss: 1.6079
+     Val Loss: 3.0615
+     Time: 415.07s
+     LR: 8.45e-03
+
+  📈 Época 17/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0486
+     Time: 413.36s
+     LR: 8.36e-03
+
+  📈 Época 18/50:
+     Train Loss: 1.6073
+     Val Loss: 3.0643
+     Time: 414.54s
+     LR: 8.27e-03
+
+  📈 Época 19/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0571
+     Time: 412.04s
+     LR: 8.19e-03
+
+  📈 Época 20/50:
+     Train Loss: 1.6068
+     Val Loss: 3.0551
+     Time: 411.27s
+     LR: 8.10e-03
+
+  📈 Época 21/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0512
+     Time: 411.64s
+     LR: 8.02e-03
+
+  📈 Época 22/50:
+     Train Loss: 1.6066
+     Val Loss: 3.0648
+     Time: 411.52s
+     LR: 7.93e-03
+
+  📈 Época 23/50:
+     Train Loss: 1.6069
+     Val Loss: 3.0646
+     Time: 411.97s
+     LR: 7.85e-03
+
+  📈 Época 24/50:
+     Train Loss: 1.6068
+     Val Loss: 3.0774
+     Time: 412.87s
+     LR: 7.77e-03
+
+  📈 Época 25/50:
+     Train Loss: 1.6070
+     Val Loss: 3.0625
+     Time: 411.31s
+     LR: 7.68e-03
+
+  📈 Época 26/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0950
+     Time: 411.62s
+     LR: 7.60e-03
+
+  📈 Época 27/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0693
+     Time: 411.01s
+     LR: 7.52e-03
+
+  📈 Época 28/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0653
+     Time: 412.73s
+     LR: 7.45e-03
+
+  📈 Época 29/50:
+     Train Loss: 1.6072
+     Val Loss: 3.0874
+     Time: 411.45s
+     LR: 7.37e-03
+
+  📈 Época 30/50:
+     Train Loss: 1.6073
+     Val Loss: 3.0659
+     Time: 412.64s
+     LR: 7.29e-03
+
+  📈 Época 31/50:
+     Train Loss: 1.6075
+     Val Loss: 3.0727
+     Time: 408.90s
+     LR: 7.21e-03
+
+  📈 Época 32/50:
+     Train Loss: 1.6074
+     Val Loss: 3.0733
+     Time: 411.80s
+     LR: 7.14e-03
+
+  📈 Época 33/50:
+     Train Loss: 1.6075
+     Val Loss: 3.0812
+     Time: 415.55s
+     LR: 7.06e-03
+
+  📈 Época 34/50:
+     Train Loss: 1.6076
+     Val Loss: 3.0768
+     Time: 412.07s
+     LR: 6.99e-03
+
+  📈 Época 35/50:
+     Train Loss: 1.6076
+     Val Loss: 3.0618
+     Time: 412.18s
+     LR: 6.92e-03
+
+  📈 Época 36/50:
+     Train Loss: 1.6076
+     Val Loss: 3.0810
+     Time: 411.40s
+     LR: 6.84e-03
+
+  📈 Época 37/50:
+     Train Loss: 1.6076
+     Val Loss: 3.0655
+     Time: 412.51s
+     LR: 6.77e-03
+
+  📈 Época 38/50:
+     Train Loss: 1.6077
+     Val Loss: 3.0836
+     Time: 413.53s
+     LR: 6.70e-03
+
+  📈 Época 39/50:
+     Train Loss: 1.6076
+     Val Loss: 3.0717
+     Time: 410.83s
+     LR: 6.63e-03
+
+  📈 Época 40/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0795
+     Time: 411.12s
+     LR: 6.56e-03
+
+  📈 Época 41/50:
+     Train Loss: 1.6077
+     Val Loss: 3.0716
+     Time: 415.77s
+     LR: 6.49e-03
+
+  📈 Época 42/50:
+     Train Loss: 1.6079
+     Val Loss: 3.0703
+     Time: 411.33s
+     LR: 6.42e-03
+
+  📈 Época 43/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0628
+     Time: 409.68s
+     LR: 6.36e-03
+
+  📈 Época 44/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0849
+     Time: 409.77s
+     LR: 6.29e-03
+
+  📈 Época 45/50:
+     Train Loss: 1.6079
+     Val Loss: 3.0696
+     Time: 411.78s
+     LR: 6.22e-03
+
+  📈 Época 46/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0750
+     Time: 412.01s
+     LR: 6.16e-03
+
+  📈 Época 47/50:
+     Train Loss: 1.6078
+     Val Loss: 3.0776
+     Time: 411.33s
+     LR: 6.09e-03
+
+  📈 Época 48/50:
+     Train Loss: 1.6079
+     Val Loss: 3.0747
+     Time: 410.68s
+     LR: 6.03e-03
+
+  📈 Época 49/50:
+     Train Loss: 1.6079
+     Val Loss: 3.0743
+     Time: 416.43s
+     LR: 5.97e-03
+
+  📈 Época 50/50:
+     Train Loss: 1.6080
+     Val Loss: 3.0629
+     Time: 416.97s
+     LR: 5.90e-03
+
+================================================================================
+📊 FASE 4: EVALUACIÓN DE MODELOS
+================================================================================
+
+============================================================
+🔍 Evaluando modelo: Transformer
+============================================================
+
+📊 Resultados de Transformer:
+   CER (Character Error Rate): 89.87%
+   WER (Word Error Rate): 466.97%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.900s
+   Total samples: 200
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'peek out the window'
+   Pred: 'oth?s arans my t ou newnoreal'
+
+============================================================
+🔍 Evaluando modelo: TCN
+============================================================
+
+📊 Resultados de TCN:
+   CER (Character Error Rate): 108.17%
+   WER (Word Error Rate): 552.28%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.891s
+   Total samples: 200
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'peek out the window'
+   Pred: 'tlq- tnde'
+
+================================================================================
+📈 FASE 5: GENERACIÓN DE VISUALIZACIONES
+================================================================================
+✅ Gráfica guardada: ./asl_results/training_comparison.png
+✅ Gráfica guardada: ./asl_results/metrics_comparison.png
+✅ Gráfica guardada: ./asl_results/error_analysis.png
+
+================================================================================
+🏆 RESUMEN FINAL Y CONCLUSIONES
+================================================================================
+
+📊 COMPARACIÓN DE MÉTRICAS:
+
+Métrica              Transformer     TCN             Mejor          
+-----------------------------------------------------------------
+CER (%)              89.87           108.17          Transformer    
+WER (%)              466.97          552.28          Transformer    
+Accuracy (%)         0.00            0.00            TCN            
+Avg Loss             0.00            0.00            TCN            
+
+⏱️ TIEMPO DE ENTRENAMIENTO:
+   Transformer: 20795.18s (346.59 min)
+   TCN: 20551.60s (342.53 min)
+
+💾 ARCHIVOS GENERADOS:
+   📁 Directorio: ./asl_results
+   📊 training_comparison.png
+   📊 metrics_comparison.png
+   📊 error_analysis.png
+
+================================================================================
+✅ ANÁLISIS COMPLETADO
+================================================================================

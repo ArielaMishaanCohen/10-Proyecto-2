@@ -1,0 +1,225 @@
+📁 Guardando salida en: /Users/arielamishaancohen/Documents/UVG/Clases/Semestre 8 (2025)/Data Science/Proyectos y Tareas/10 Proyecto 2 TEMPORAL/asl_results/run-20251020-164725
+================================================================================
+🚀 COMPARACIÓN DE MODELOS: TRANSFORMER vs TCN
+   ASL Fingerspelling Recognition
+================================================================================
+
+================================================================================
+📂 FASE 1: CARGA Y PREPARACIÓN DE DATOS
+================================================================================
+📂 Cargando metadata...
+✅ Dataset: 100 secuencias
+
+✅ Split completado: train=80, val=20
+
+🔄 Creando datasets...
+
+================================================================================
+🤖 FASE 2: ENTRENAMIENTO DEL TRANSFORMER
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: Transformer
+============================================================
+
+  📈 Época 1/10:
+     Train Loss: 1.3754
+     Val Loss: 3.9058
+     Time: 47.89s
+     LR: 9.92e-02
+
+  📈 Época 2/10:
+     Train Loss: 1.2078
+     Val Loss: 3.7591
+     Time: 46.58s
+     LR: 9.83e-02
+
+  📈 Época 3/10:
+     Train Loss: 1.1713
+     Val Loss: 3.7029
+     Time: 47.16s
+     LR: 9.75e-02
+
+  📈 Época 4/10:
+     Train Loss: 1.1513
+     Val Loss: 3.8006
+     Time: 47.41s
+     LR: 9.67e-02
+
+  📈 Época 5/10:
+     Train Loss: 1.1492
+     Val Loss: 3.8928
+     Time: 47.25s
+     LR: 9.59e-02
+
+  📈 Época 6/10:
+     Train Loss: 1.1463
+     Val Loss: 3.7875
+     Time: 47.61s
+     LR: 9.51e-02
+
+  📈 Época 7/10:
+     Train Loss: 1.1434
+     Val Loss: 3.8641
+     Time: 47.83s
+     LR: 9.43e-02
+
+  📈 Época 8/10:
+     Train Loss: 1.1427
+     Val Loss: 3.8175
+     Time: 48.11s
+     LR: 9.35e-02
+
+  📈 Época 9/10:
+     Train Loss: 1.1387
+     Val Loss: 3.6969
+     Time: 47.97s
+     LR: 9.27e-02
+
+  📈 Época 10/10:
+     Train Loss: 1.1377
+     Val Loss: 3.7982
+     Time: 47.22s
+     LR: 9.19e-02
+
+================================================================================
+🔥 FASE 3: ENTRENAMIENTO DEL TCN
+================================================================================
+
+============================================================
+🏋️ Entrenando modelo: TCN
+============================================================
+
+  📈 Época 1/10:
+     Train Loss: 1.5155
+     Val Loss: 3.7175
+     Time: 45.30s
+     LR: 9.92e-02
+
+  📈 Época 2/10:
+     Train Loss: 1.2236
+     Val Loss: 3.7511
+     Time: 44.80s
+     LR: 9.83e-02
+
+  📈 Época 3/10:
+     Train Loss: 1.1789
+     Val Loss: 3.8242
+     Time: 44.83s
+     LR: 9.75e-02
+
+  📈 Época 4/10:
+     Train Loss: 1.1594
+     Val Loss: 3.7160
+     Time: 45.35s
+     LR: 9.67e-02
+
+  📈 Época 5/10:
+     Train Loss: 1.1536
+     Val Loss: 3.7866
+     Time: 44.77s
+     LR: 9.59e-02
+
+  📈 Época 6/10:
+     Train Loss: 1.1507
+     Val Loss: 3.7784
+     Time: 44.73s
+     LR: 9.51e-02
+
+  📈 Época 7/10:
+     Train Loss: 1.1441
+     Val Loss: 3.7098
+     Time: 45.11s
+     LR: 9.43e-02
+
+  📈 Época 8/10:
+     Train Loss: 1.1441
+     Val Loss: 4.1425
+     Time: 46.15s
+     LR: 9.35e-02
+
+  📈 Época 9/10:
+     Train Loss: 1.1417
+     Val Loss: 3.7482
+     Time: 46.12s
+     LR: 9.27e-02
+
+  📈 Época 10/10:
+     Train Loss: 1.1420
+     Val Loss: 3.8089
+     Time: 46.08s
+     LR: 9.19e-02
+
+================================================================================
+📊 FASE 4: EVALUACIÓN DE MODELOS
+================================================================================
+
+============================================================
+🔍 Evaluando modelo: Transformer
+============================================================
+
+📊 Resultados de Transformer:
+   CER (Character Error Rate): 144.73%
+   WER (Word Error Rate): 1192.11%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.238s
+   Total samples: 20
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'mio-footwear/refugee'
+   Pred: 'gyweng/l la.r'
+
+============================================================
+🔍 Evaluando modelo: TCN
+============================================================
+
+📊 Resultados de TCN:
+   CER (Character Error Rate): 181.15%
+   WER (Word Error Rate): 1492.11%
+   Accuracy (Exact Match): 0.00%
+   Avg Loss: 0.0000
+   Avg Time per batch: 0.309s
+   Total samples: 20
+
+📝 Ejemplos de predicciones:
+
+   Ejemplo 1:
+   Real: 'mio-footwear/refugee'
+   Pred: '0.b -a'
+
+================================================================================
+📈 FASE 5: GENERACIÓN DE VISUALIZACIONES
+================================================================================
+✅ Gráfica guardada: ./asl_results/training_comparison.png
+✅ Gráfica guardada: ./asl_results/metrics_comparison.png
+✅ Gráfica guardada: ./asl_results/error_analysis.png
+
+================================================================================
+🏆 RESUMEN FINAL Y CONCLUSIONES
+================================================================================
+
+📊 COMPARACIÓN DE MÉTRICAS:
+
+Métrica              Transformer     TCN             Mejor          
+-----------------------------------------------------------------
+CER (%)              144.73          181.15          Transformer    
+WER (%)              1192.11         1492.11         Transformer    
+Accuracy (%)         0.00            0.00            TCN            
+Avg Loss             0.00            0.00            TCN            
+
+⏱️ TIEMPO DE ENTRENAMIENTO:
+   Transformer: 475.01s (7.92 min)
+   TCN: 453.23s (7.55 min)
+
+💾 ARCHIVOS GENERADOS:
+   📁 Directorio: ./asl_results
+   📊 training_comparison.png
+   📊 metrics_comparison.png
+   📊 error_analysis.png
+
+================================================================================
+✅ ANÁLISIS COMPLETADO
+================================================================================
