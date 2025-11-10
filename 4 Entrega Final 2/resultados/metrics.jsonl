@@ -1,0 +1,1 @@
+{"group": "Transformer-B", "CER": 84.9692712906058, "WER": 441.4233576642336, "Acc": 0.0, "AvgLoss": 0.0, "AvgTimePerBatch": 1.575804395675659, "TotalSamples": 200, "time": "2025-11-07T15:42:31.766323"}
