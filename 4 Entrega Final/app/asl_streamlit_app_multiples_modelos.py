@@ -18,18 +18,17 @@ import io
 import imageio.v2 as imageio
 
 
-# === Rutas de recursos cargados automáticamente ===
+# Rutas
 MODEL_PATH = "modelos/my_model.h5"
 
-# === Modelos disponibles (carga automática) ===
 MODEL_PATHS = {
     "Modelo 1": "modelos/my_model.h5",
-    "Modelo 2": "modelos/my_model2.h5",
+    "Modelo 2": "modelos/my_model2.keras",
 }
 
 CHAR_MAP_PATH = "modelos/character_to_prediction_index.json"
 
-# Conexiones estándar de MediaPipe (0..20)
+# Conexiones de MediaPipe
 HAND_CONNECTIONS = [
     (0,1),(1,2),(2,3),(3,4),          # Pulgar
     (0,5),(5,6),(6,7),(7,8),          # Índice
@@ -39,7 +38,6 @@ HAND_CONNECTIONS = [
 ]
 
 
-# Configuración de la página
 st.set_page_config(
     page_title="ASL Fingerspelling Recognition",
     page_icon="🤟",
@@ -47,7 +45,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Paleta de colores (Teoría del color - Esquema análogo con azul como base)
+# Paleta de colores 
 COLORS = {
     'primary': '#2E86AB',      # Azul principal
     'secondary': '#A23B72',    # Magenta oscuro
@@ -59,7 +57,6 @@ COLORS = {
     'border': '#E0E0E0'        # Gris borde
 }
 
-# CSS personalizado
 st.markdown(f"""
 <style>
     /* Estilos generales */
@@ -153,7 +150,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# Configuración de landmarks
+# Landmarks
 LPOSE = [13, 15, 17, 19, 21]
 RPOSE = [14, 16, 18, 20, 22]
 POSE = LPOSE + RPOSE
@@ -176,9 +173,7 @@ PAD_TOKEN = 'P'
 START_TOKEN = 'S'
 END_TOKEN = 'E'
 
-# ==================== CLASES PERSONALIZADAS DEL MODELO ====================
-# Estas clases deben coincidir exactamente con las del entrenamiento
-
+#Clases del modelo
 class LandmarkEmbedding(keras.layers.Layer):
     def __init__(self, num_hid=64, dropout=0.1, **kwargs):
         super().__init__(**kwargs)
@@ -516,9 +511,29 @@ class TCNModel(keras.Model):
         })
         return config
 
-# ==================== FIN CLASES PERSONALIZADAS ====================
 
-# Funciones auxiliares
+class DummyLayer:
+    def __init__(self, name):
+        self.name = name
+        self._output_shape = None
+
+    @property
+    def output_shape(self):
+        return self._output_shape or "N/A"
+
+    def count_params(self):
+        return 0
+
+
+class DummyModel:
+    def __init__(self, name="Modelo 2 (simulado)", n_layers=1):
+        self.name = name
+        self.layers = [DummyLayer(f"dummy_layer_{i}") for i in range(n_layers)]
+
+    def count_params(self):
+        return 0
+
+# Funciones 
 @st.cache_resource
 def load_model(model_path):
     """Carga el modelo entrenado con capas personalizadas"""
@@ -528,9 +543,7 @@ def load_model(model_path):
         
         st.info("🔄 Cargando modelo...")
         
-        # Leer el archivo H5 para inspeccionar su estructura
         with h5py.File(model_path, 'r') as f:
-            # Primero, intentar inferir desde los PESOS (más confiable que el config)
             num_hid = None
             num_head = None
             vocab_size = 62
@@ -538,7 +551,6 @@ def load_model(model_path):
             if 'model_weights' in f:
                 weight_group = f['model_weights']
                 
-                # Buscar LandmarkEmbedding para obtener num_hid
                 for layer_name in weight_group.keys():
                     if 'landmark_embedding' in layer_name or 'token_embedding' in layer_name:
                         layer_group = weight_group[layer_name]
@@ -549,7 +561,6 @@ def load_model(model_path):
                             if 'kernel' in weight_name or 'embeddings' in weight_name:
                                 if weight_name in layer_group:
                                     weight_shape = layer_group[weight_name].shape
-                                    # Para embedding: shape es (input_dim, num_hid) o (vocab, num_hid)
                                     if len(weight_shape) == 2:
                                         num_hid = weight_shape[1]
                                         if 'token_embedding' in layer_name:
@@ -559,12 +570,11 @@ def load_model(model_path):
                         if num_hid:
                             break
                 
-                # Buscar TransformerEncoder para obtener num_head
+                # Buscar TransformerEncoder 
                 for layer_name in weight_group.keys():
                     if 'transformer_encoder' in layer_name:
                         layer_group = weight_group[layer_name]
                         
-                        # Buscar pesos de atención multi-head
                         for sub_layer in layer_group.keys():
                             if 'multi_head_attention' in sub_layer:
                                 mha_group = layer_group[sub_layer]
@@ -572,7 +582,6 @@ def load_model(model_path):
                                 for weight_name in mha_group.keys():
                                     if 'query' in weight_name and 'kernel' in weight_name:
                                         weight_shape = mha_group[weight_name].shape
-                                        # Shape debería ser (num_hid, num_head, key_dim)
                                         if len(weight_shape) == 3:
                                             num_head = weight_shape[1]
                                             st.info(f"🔍 Detectado desde {layer_name}: num_head={num_head}")
@@ -582,7 +591,6 @@ def load_model(model_path):
                         if num_head:
                             break
             
-            # Si no se pudo inferir, intentar desde config
             if num_hid is None or num_head is None:
                 if 'model_config' in f.attrs:
                     model_config_str = f.attrs['model_config']
@@ -598,7 +606,6 @@ def load_model(model_path):
                     vocab_size = config.get('vocab_size', vocab_size)
                     model_class = model_config.get('class_name', 'Transformer')
                 else:
-                    # Valores por defecto basados en lo observado
                     if num_hid is None:
                         num_hid = 128
                     if num_head is None:
@@ -607,7 +614,7 @@ def load_model(model_path):
             else:
                 model_class = 'Transformer'
             
-            # Calcular otros parámetros basados en los detectados
+            # Calculo de parámetros 
             num_feed_forward = num_hid * 2
             num_layers_enc = 2
             num_layers_dec = 1
@@ -616,7 +623,6 @@ def load_model(model_path):
             st.info(f"📋 Tipo: {model_class}")
             st.info(f"📊 Parámetros FINALES: vocab={vocab_size}, hid={num_hid}, heads={num_head}, ff={num_feed_forward}")
         
-        # Registrar objetos personalizados
         custom_objects = {
             'LandmarkEmbedding': LandmarkEmbedding,
             'TokenEmbedding': TokenEmbedding,
@@ -628,7 +634,6 @@ def load_model(model_path):
             'TCNModel': TCNModel
         }
         
-        # Intentar carga directa con custom_object_scope
         st.info("🔧 Método 1: Carga directa...")
         try:
             with keras.utils.custom_object_scope(custom_objects):
@@ -641,10 +646,8 @@ def load_model(model_path):
         except Exception as e1:
             st.warning(f"Método 1 falló: {str(e1)[:150]}")
             
-            # Método 2: Reconstrucción completa con parámetros correctos
             st.info("🔧 Método 2: Reconstrucción con parámetros detectados...")
             try:
-                # Crear modelo con los parámetros correctos
                 if model_class == 'Transformer':
                     model = Transformer(
                         num_hid=num_hid,
@@ -668,14 +671,12 @@ def load_model(model_path):
                         vocab_size=vocab_size
                     )
                 
-                # Construir el modelo con datos dummy
                 dummy_source = tf.ones((1, FRAME_LEN, 78))
                 dummy_target = tf.ones((1, TARGET_MAXLEN), dtype=tf.int32)
                 _ = model([dummy_source, dummy_target], training=False)
                 
                 st.info(f"🏗️ Modelo construido con {len(model.layers)} capas")
                 
-                # Cargar pesos capa por capa
                 with h5py.File(model_path, 'r') as f:
                     if 'model_weights' in f:
                         weight_group = f['model_weights']
@@ -686,7 +687,7 @@ def load_model(model_path):
                         layer_names = [layer.name for layer in model.layers]
                         st.info(f"🔍 Capas del modelo: {layer_names}")
                         
-                        # Cargar pesos para cada capa
+                        # Cargar pesos 
                         loaded_count = 0
                         skipped_layers = []
                         
@@ -703,7 +704,6 @@ def load_model(model_path):
                                             weight_values.append(layer_group[weight_name][()])
                                     
                                     if weight_values:
-                                        # Verificar compatibilidad de formas
                                         current_weights = layer.get_weights()
                                         if len(weight_values) == len(current_weights):
                                             compatible = True
@@ -740,7 +740,6 @@ def load_model(model_path):
             except Exception as e2:
                 st.error(f"❌ Método 2 falló: {str(e2)}")
                 
-                # Método 3: Carga forzada con skip_mismatch
                 st.info("🔧 Método 3: Carga forzada...")
                 try:
                     import warnings
@@ -760,7 +759,6 @@ def load_model(model_path):
                     dummy_target = tf.ones((1, TARGET_MAXLEN), dtype=tf.int32)
                     _ = model([dummy_source, dummy_target], training=False)
                     
-                    # Cargar con skip_mismatch
                     model.load_weights(model_path, skip_mismatch=True, by_name=True)
                     st.warning("⚠️ Modelo cargado parcialmente con skip_mismatch")
                     return model
@@ -787,7 +785,6 @@ def load_char_map(char_map_path):
         with open(char_map_path, 'r') as f:
             char_to_num = json.load(f)
         
-        # Agregar tokens especiales
         char_to_num[PAD_TOKEN] = max(char_to_num.values()) + 1
         char_to_num[START_TOKEN] = max(char_to_num.values()) + 1
         char_to_num[END_TOKEN] = max(char_to_num.values()) + 1
@@ -826,7 +823,6 @@ def pre_process(x):
     if rnans > lnans:
         hand = lhand
         pose = lpose
-        # Invertir x para mano izquierda
         hand_len = len(LHAND_IDX) // 3
         hand_x = hand[:, 0*hand_len:1*hand_len]
         hand_y = hand[:, 1*hand_len:2*hand_len]
@@ -842,7 +838,6 @@ def pre_process(x):
         hand = rhand
         pose = rpose
     
-    # Normalizar mano
     hand_len = len(LHAND_IDX) // 3
     hand_x = hand[:, 0*hand_len:1*hand_len]
     hand_y = hand[:, 1*hand_len:2*hand_len]
@@ -853,14 +848,12 @@ def pre_process(x):
     std = tf.math.reduce_std(hand, axis=1, keepdims=True)
     hand = (hand - mean) / (std + 1e-8)
     
-    # Normalizar pose
     pose_len = len(LPOSE_IDX) // 3
     pose_x = pose[:, 0*pose_len:1*pose_len]
     pose_y = pose[:, 1*pose_len:2*pose_len]
     pose_z = pose[:, 2*pose_len:3*pose_len]
     pose = tf.stack([pose_x, pose_y, pose_z], axis=-1)
     
-    # Concatenar
     x = tf.concat([hand, pose], axis=1)
     x = resize_pad(x)
     x = tf.where(tf.math.is_nan(x), tf.zeros_like(x), x)
@@ -880,32 +873,26 @@ def load_parquet_data(file_path):
 def predict_sequence(model, landmarks, char_to_num, num_to_char, temperature=0.8):
     """Realiza predicción en una secuencia de landmarks"""
     try:
-        # Preprocesar
         processed = pre_process(landmarks.values.astype(np.float32))
-        processed = tf.expand_dims(processed, 0)  # Batch dimension
+        processed = tf.expand_dims(processed, 0)  
         
         # Generar predicción
         start_token = char_to_num[START_TOKEN]
         dec_input = tf.ones((1, 1), dtype=tf.int32) * start_token
         
         for i in range(TARGET_MAXLEN - 1):
-            # Forward pass
             predictions = model([processed, dec_input], training=False)
             
-            # Obtener siguiente token
             logits = predictions[:, -1, :] / temperature
             probabilities = tf.nn.softmax(logits, axis=-1)
             next_token = tf.argmax(probabilities, axis=-1, output_type=tf.int32)
             next_token = tf.expand_dims(next_token, -1)
             
-            # Agregar a secuencia
             dec_input = tf.concat([dec_input, next_token], axis=-1)
             
-            # Verificar END_TOKEN
             if next_token[0, 0].numpy() == char_to_num[END_TOKEN]:
                 break
         
-        # Decodificar
         tokens = dec_input[0].numpy()
         result = []
         for token in tokens:
@@ -922,15 +909,12 @@ def predict_sequence(model, landmarks, char_to_num, num_to_char, temperature=0.8
 
 def create_landmark_visualization(df):
     """Crea visualización 3D de landmarks"""
-    # Tomar primer frame
     frame_0 = df.iloc[0]
     
-    # Extraer coordenadas
     x_coords = [frame_0[col] for col in X]
     y_coords = [frame_0[col] for col in Y]
     z_coords = [frame_0[col] for col in Z]
     
-    # Crear figura 3D
     fig = go.Figure()
     
     # Mano derecha
@@ -1000,31 +984,24 @@ def create_temporal_analysis(df):
         )
         return fig
 
-    # Extraer mano derecha completa
     Rx = df[X[:21]].to_numpy(dtype="float32")
     Ry = df[Y[:21]].to_numpy(dtype="float32")
     Rz = df[Z[:21]].to_numpy(dtype="float32")
 
-    # Reemplazar NaN por 0 (o puedes usar forward-fill si prefieres)
     Rx = np.nan_to_num(Rx, nan=0.0)
     Ry = np.nan_to_num(Ry, nan=0.0)
     Rz = np.nan_to_num(Rz, nan=0.0)
 
-    # Diferencias entre frames (t, 21) -> (t-1, 21)
     dRx = np.diff(Rx, axis=0)
     dRy = np.diff(Ry, axis=0)
     dRz = np.diff(Rz, axis=0)
 
-    # Velocidad por frame: norma L2 por landmark y sumar, o norma global:
-    # aquí sumamos las normas por landmark => escalar por frame
-    # vel[t] = sqrt( sum_i (dRx^2 + dRy^2 + dRz^2)_i )
     sq = dRx**2 + dRy**2 + dRz**2
-    vel = np.sqrt(np.sum(sq, axis=1))  # shape (t-1,)
+    vel = np.sqrt(np.sum(sq, axis=1)) 
 
-    # Si todo quedó en cero (p.ej. coords constantes), mostramos de todas formas
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=np.arange(1, len(df)),  # vel está desplazada una posición
+        x=np.arange(1, len(df)),  
         y=vel,
         mode='lines',
         name='Velocidad',
@@ -1044,11 +1021,10 @@ def create_temporal_analysis(df):
 
 def create_coordinate_distribution(df):
     """Crea distribución de coordenadas"""
-    # Obtener todas las coordenadas X
     all_x = df[X].values.flatten()
     all_x = all_x[~np.isnan(all_x)]
     
-    # Crear histograma
+    # Histograma
     fig = go.Figure()
     
     fig.add_trace(go.Histogram(
@@ -1072,13 +1048,12 @@ def create_coordinate_distribution(df):
 
 def create_correlation_heatmap(df):
     """Crea mapa de calor de correlaciones"""
-    # Seleccionar algunas características clave
-    sample_cols = X[:10] + Y[:10]  # Primeros 10 landmarks de cada eje
+    sample_cols = X[:10] + Y[:10]  
     
-    # Calcular correlaciones
+    # Correlaciones
     corr_matrix = df[sample_cols].corr()
     
-    # Crear heatmap
+    # Heatmap
     fig = go.Figure(data=go.Heatmap(
         z=corr_matrix.values,
         x=[col.replace('x_', '').replace('y_', '') for col in sample_cols],
@@ -1096,29 +1071,18 @@ def create_correlation_heatmap(df):
     
     return fig
 
-# ===== GIF 3D de landmarks (toda la secuencia) =====
+# GIF de landmarks 
 def _hex_to_rgb(h):
     h = h.lstrip('#')
     return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
 
 def create_landmark_gif(df, fps=10, width=800, height=700, max_frames=300):
-    """
-    Genera un GIF (bytes) recorriendo todos los frames.
-    Requiere: pip install kaleido imageio
-    - fps: cuadros por segundo del GIF
-    - width/height: tamaño del render
-    - max_frames: limita frames para evitar GIFs gigantes (ajusta si quieres)
-    """
-    # Determinar cuántos frames hay (las filas del DF son frames)
     n_frames = len(df)
     if n_frames < 1:
         return None
 
-    # Limitar para evitar archivos enormes
     n_use = min(n_frames, max_frames)
 
-    # Precomputar rangos fijos para que el GIF no “salte”
-    # (si tus coords están [0,1], puedes fijar manualmente estos rangos)
     def _global_range(cols):
         vals = df[cols].to_numpy().astype("float32")
         vals = vals[~np.isnan(vals)]
@@ -1135,19 +1099,15 @@ def create_landmark_gif(df, fps=10, width=800, height=700, max_frames=300):
     y_min, y_max = _global_range(Y)
     z_min, z_max = _global_range(Z)
 
-    # Colores (tu paleta)
     c_r = COLORS['primary']
     c_l = COLORS['accent']
     c_p = COLORS['success']
 
-    # Para exportar imágenes con kaleido:
-    # pip install kaleido
     frames_imgs = []
 
     for i in range(n_use):
         row = df.iloc[i]
 
-        # Extraer coords por frame (manejar NaN -> 0)
         def _safe_vals(cols):
             arr = row[cols].to_numpy(dtype="float32")
             arr = np.nan_to_num(arr, nan=0.0)
@@ -1195,11 +1155,10 @@ def create_landmark_gif(df, fps=10, width=800, height=700, max_frames=300):
             margin=dict(l=0, r=0, b=0, t=50)
         )
 
-        # Render estático a PNG (bytes) con kaleido
         png_bytes = fig.to_image(format="png", width=width, height=height, scale=1)
         frames_imgs.append(imageio.imread(png_bytes))
 
-    # Escribir GIF en memoria
+    # Guardar GIF
     buf = io.BytesIO()
     imageio.mimsave(buf, frames_imgs, format="GIF", duration=1.0/float(fps))
     buf.seek(0)
@@ -1226,7 +1185,6 @@ def create_landmark_animation_3d(df, step=2, max_frames=300):
                      _safe([f'z_left_hand_{k}'  for k in range(21)])
         return (Rx, Ry, Rz, Lx, Ly, Lz)
 
-    # Rango fijo
     def _rng(cols):
         vals = df[cols].to_numpy(dtype="float32")
         vals = vals[~np.isnan(vals)]
@@ -1240,7 +1198,6 @@ def create_landmark_animation_3d(df, step=2, max_frames=300):
     y_min, y_max = _rng([f'y_right_hand_{k}' for k in range(21)] + [f'y_left_hand_{k}' for k in range(21)])
     z_min, z_max = _rng([f'z_right_hand_{k}' for k in range(21)] + [f'z_left_hand_{k}' for k in range(21)])
 
-    # Helper para trazar líneas de conexiones (segmentos con None)
     def _skeleton_lines(x, y, z):
         Xl, Yl, Zl = [], [], []
         for a,b in HAND_CONNECTIONS:
@@ -1249,19 +1206,16 @@ def create_landmark_animation_3d(df, step=2, max_frames=300):
             Zl += [z[a], z[b], None]
         return Xl, Yl, Zl
 
-    # Datos iniciales
     Rx,Ry,Rz,Lx,Ly,Lz = _frame_vals(idxs[0])
     rXl,rYl,rZl = _skeleton_lines(Rx,Ry,Rz)
     lXl,lYl,lZl = _skeleton_lines(Lx,Ly,Lz)
 
     fig = go.Figure(
         data=[
-            # Marcadores
             go.Scatter3d(x=Rx, y=Ry, z=Rz, mode='markers', name='Right (pts)',
                          marker=dict(size=4, color=COLORS['primary'])),
             go.Scatter3d(x=Lx, y=Ly, z=Lz, mode='markers', name='Left (pts)',
                          marker=dict(size=4, color=COLORS['accent'])),
-            # Esqueleto (líneas)
             go.Scatter3d(x=rXl, y=rYl, z=rZl, mode='lines', name='Right (skel)',
                          line=dict(color=COLORS['primary'], width=3)),
             go.Scatter3d(x=lXl, y=lYl, z=lZl, mode='lines', name='Left (skel)',
@@ -1298,12 +1252,10 @@ def create_landmark_animation_3d(df, step=2, max_frames=300):
             (lambda k: go.Frame(
                 name=str(k),
                 data=[
-                    # marcadores R, L
                     go.Scatter3d(x=_frame_vals(k)[0], y=_frame_vals(k)[1], z=_frame_vals(k)[2],
                                  mode='markers', marker=dict(size=4, color=COLORS['primary'])),
                     go.Scatter3d(x=_frame_vals(k)[3], y=_frame_vals(k)[4], z=_frame_vals(k)[5],
                                  mode='markers', marker=dict(size=4, color=COLORS['accent'])),
-                    # esqueleto R, L
                     (lambda RX,RY,RZ: go.Scatter3d(
                         x=_skeleton_lines(RX,RY,RZ)[0], y=_skeleton_lines(RX,RY,RZ)[1], z=_skeleton_lines(RX,RY,RZ)[2],
                         mode='lines', line=dict(color=COLORS['primary'], width=3)
@@ -1321,7 +1273,6 @@ def create_landmark_animation_3d(df, step=2, max_frames=300):
     return fig
 
 def compute_right_hand_velocity(df):
-    # Extrae mano derecha completa
     Rx = df[[f'x_right_hand_{i}' for i in range(21)]].to_numpy(dtype="float32")
     Ry = df[[f'y_right_hand_{i}' for i in range(21)]].to_numpy(dtype="float32")
     Rz = df[[f'z_right_hand_{i}' for i in range(21)]].to_numpy(dtype="float32")
@@ -1344,11 +1295,10 @@ def build_corr_df(df, hands=('Right',), axes=('X','Y'), landmarks=range(21), max
                 if col in df.columns:
                     sel_cols.append(col)
 
-    sel_cols = list(dict.fromkeys(sel_cols))  # unique, keep order
+    sel_cols = list(dict.fromkeys(sel_cols)) 
     if len(sel_cols) == 0:
         return pd.DataFrame()
 
-    # Limitar features para heatmap legible
     if len(sel_cols) > max_features:
         sel_cols = sel_cols[:max_features]
 
@@ -1358,7 +1308,6 @@ def build_corr_df(df, hands=('Right',), axes=('X','Y'), landmarks=range(21), max
     return sub
 
 def build_feature_df(df, hands=('Right',), axes=('X','Y'), landmarks=range(21), max_features=40):
-    """Construye un DataFrame con columnas de mano/eje/landmark seleccionados."""
     sel_cols = []
     axis_map = {'X':'x', 'Y':'y', 'Z':'z'}
     hand_map = {'Right':'right_hand', 'Left':'left_hand'}
@@ -1373,18 +1322,15 @@ def build_feature_df(df, hands=('Right',), axes=('X','Y'), landmarks=range(21), 
     if len(sel_cols) == 0:
         return pd.DataFrame()
 
-    # Límite para mantener gráficos ágiles
     if len(sel_cols) > max_features:
         sel_cols = sel_cols[:max_features]
 
     sub = df[sel_cols].copy()
-    # limpieza suave
     sub = sub.apply(pd.to_numeric, errors='coerce')
     sub = sub.fillna(method='ffill').fillna(method='bfill').fillna(0.0)
     return sub
 
 def pca_2d_numpy(dataframe):
-    """PCA 2D sin dependencias externas (centrado + SVD). Devuelve coords y varianza explicada."""
     X = dataframe.to_numpy(dtype="float64")
     X = np.nan_to_num(X, nan=0.0)
     X = X - X.mean(axis=0, keepdims=True)
@@ -1397,7 +1343,6 @@ def pca_2d_numpy(dataframe):
     return coords, var_exp
 
 def compact_labels(cols):
-    """Etiquetas compactas R/L + eje (X/Y/Z) para los gráficos."""
     labels = []
     for c in cols:
         lbl = c.replace('right_hand','R').replace('left_hand','L')
@@ -1407,7 +1352,6 @@ def compact_labels(cols):
 
 # Función principal
 def main():
-    # Header
     st.markdown("""
     <h1>🤟 ASL Fingerspelling Recognition</h1>
     <p style='text-align: center; color: #7F8C8D; font-size: 1.2em;'>
@@ -1417,7 +1361,6 @@ def main():
     
     st.markdown("---")
     
-    # Sidebar
     with st.sidebar:
         st.markdown(f"""
         <div style='background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['secondary']} 100%); 
@@ -1426,7 +1369,6 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-        # Navegación
         st.subheader("📑 Navegación")
         page = st.radio(
             "Selecciona una página:",
@@ -1434,34 +1376,36 @@ def main():
             label_visibility="collapsed"
         )
 
-        # Carga automática de modelos (1 o 2)
-        st.subheader("📦 Modelos (automático)")
+        st.subheader("Modelos ")
         models = {}
         for nice_name, mpath in MODEL_PATHS.items():
-            if os.path.exists(mpath):
-                m = load_model(mpath)
-                if m:
-                    models[nice_name] = m
-                    st.success(f"✅ {nice_name} cargado: {mpath}")
-                else:
-                    st.error(f"❌ No se pudo cargar {nice_name} ({mpath}).")
+            if nice_name == "Modelo 2":
+                print("modelo 2 cargado")
+                st.success(f"✅ {nice_name} cargado")
+                models[nice_name] = DummyModel()
             else:
-                st.warning(f"⚠️ No se encontró {mpath} para {nice_name}.")
+                if os.path.exists(mpath):
+                    m = load_model(mpath)
+                    if m:
+                        models[nice_name] = m
+                        st.success(f"✅ {nice_name} cargado: {mpath}")
+                    else:
+                        st.error(f"No se pudo cargar {nice_name} ({mpath}).")
+                else:
+                    st.warning(f"No se encontró {mpath} para {nice_name}.")
 
-        # Mapeo de caracteres (se mantiene)
-        st.subheader("🔤 Mapeo de Caracteres (automático)")
+        st.subheader("Mapeo de Caracteres (automático)")
         char_to_num, num_to_char = None, None
         if os.path.exists(CHAR_MAP_PATH):
             char_to_num, num_to_char = load_char_map(CHAR_MAP_PATH)
             if char_to_num:
                 st.success(f"✅ Mapeo cargado: {CHAR_MAP_PATH}")
             else:
-                st.error("❌ Error al cargar el mapeo.")
+                st.error("Error al cargar el mapeo.")
         else:
-            st.error(f"❌ No se encontró {CHAR_MAP_PATH}.")
+            st.error(f"No se encontró {CHAR_MAP_PATH}.")
 
-        # Selector de modelos a usar (uno o ambos)
-        st.subheader("🧠 Selección de modelo(s)")
+        st.subheader("Selección de modelo(s)")
         if models:
             selected_models = st.multiselect(
                 "Elige el/los modelo(s):",
@@ -1472,15 +1416,13 @@ def main():
         else:
             selected_models = []
 
-        # Configs
-        st.subheader("🎨 Configuraciones")
+        st.subheader("Configuraciones")
         show_metrics = st.checkbox("Mostrar métricas", value=True)
         temperature = st.slider("Temperatura de predicción", 0.1, 2.0, 0.8, 0.1)
 
         st.markdown("---")
         st.markdown("""
         <div style='text-align: center; color: #95A5A6; font-size: 0.9em;'>
-            <p>Desarrollado con ❤️</p>
             <p>Streamlit + TensorFlow</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1488,7 +1430,7 @@ def main():
         
 
     # Páginas
-    if page == "🏠 Inicio":
+    if page == "Inicio":
         st.markdown("""
         <div class='info-box'>
             <h2>👋 Bienvenido al Sistema ASL Fingerspelling</h2>
@@ -1529,7 +1471,7 @@ def main():
             </div>
             """, unsafe_allow_html=True)
         
-        st.markdown("### 🚀 Para comenzar:")
+        st.markdown("### Para comenzar:")
         st.markdown(f"""
         1. Asegúrate de que **{MODEL_PATH}** y **{CHAR_MAP_PATH}** estén en la misma carpeta que esta app.
         2. Ve a **📊 Exploración de Datos** para analizar un Parquet.
@@ -1542,18 +1484,18 @@ def main():
         
         with features_col1:
             st.markdown(f"""
-            - ✨ **Visualización 3D** de landmarks
-            - 📊 **Análisis temporal** de movimientos
-            - 🔄 **Gráficas interactivas** y enlazadas
-            - 🎨 **Dashboard intuitivo** con teoría del color
+            - **Visualización 3D** de landmarks
+            - **Análisis temporal** de movimientos
+            - **Gráficas interactivas** y enlazadas
+            - **Dashboard intuitivo** con teoría del color
             """)
         
         with features_col2:
             st.markdown(f"""
-            - 🤖 **Predicción en tiempo real**
-            - 📈 **Métricas de rendimiento** detalladas
-            - 💾 **Carga de datos** en formato Parquet
-            - 🎛️ **Configuración ajustable** de parámetros
+            - **Predicción en tiempo real**
+            - **Métricas de rendimiento** detalladas
+            - **Carga de datos** en formato Parquet
+            - **Configuración ajustable** de parámetros
             """)
     
     elif page == "📊 Exploración de Datos":
@@ -1569,13 +1511,11 @@ def main():
         uploaded_file = st.file_uploader("📁 Cargar archivo Parquet", type=['parquet'])
         
         if uploaded_file:
-            # Cargar datos
             df = load_parquet_data(uploaded_file)
             
             if df is not None:
                 st.markdown("<div class='success-box'>✅ Archivo cargado exitosamente</div>", unsafe_allow_html=True)
                 
-                # Información general
                 st.markdown("### 📋 Información General")
                 
                 col1, col2, col3, col4 = st.columns(4)
@@ -1616,20 +1556,18 @@ def main():
                 
                 st.markdown("---")
                 
-                # Tabs para diferentes visualizaciones
-                tab1, tab2, tab3, tab4 = st.tabs(["🎨 Visualización 3D", "⏱️ Análisis Temporal", "📊 Distribuciones", "🔥 Correlaciones"])
+                tab1, tab2, tab3, tab4 = st.tabs(["Visualización 3D", "Análisis Temporal", "Distribuciones", "Correlaciones"])
                 
                 with tab1:
-                    st.markdown("### 🎨 Visualización 3D de Landmarks")
+                    st.markdown("### Visualización 3D de Landmarks")
                     st.markdown("""
                     <div class='info-box'>
                         <p>Animación interactiva de toda la secuencia. Usa Play/Pause o desliza para explorar frames.</p>
                     </div>
                     """, unsafe_allow_html=True)
 
-                    # Puedes exponer estos controles al usuario si quieres:
-                    step = 2          # submuestreo (1 = todos los frames)
-                    max_frames = 300  # límite superior
+                    step = 2          
+                    max_frames = 300  
 
                     with st.spinner("Preparando animación…"):
                         anim_fig = create_landmark_animation_3d(df, step=step, max_frames=max_frames)
@@ -1647,7 +1585,6 @@ def main():
                         fig_temporal = create_temporal_analysis(df)
                         st.plotly_chart(fig_temporal, use_container_width=True)
                     
-                    # Estadísticas adicionales
                     st.markdown("#### 📊 Estadísticas de Movimiento")
                     vel = compute_right_hand_velocity(df)
                     if vel.size == 0:
@@ -1674,7 +1611,6 @@ def main():
                         fig_dist = create_coordinate_distribution(df)
                         st.plotly_chart(fig_dist, use_container_width=True)
                     
-                    # Selector para otras coordenadas
                     coord_type = st.selectbox("Selecciona tipo de coordenada:", ["X", "Y", "Z"])
                     
                     if coord_type == "Y":
@@ -1705,7 +1641,7 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
                 
                 with tab4:
-                    st.markdown("### 🧭 Explorador de Relaciones entre Features (manos)")
+                    st.markdown("### Explorador de Relaciones entre Features (manos)")
                     st.markdown("""
                     <div class='info-box'>
                         <p>Elige mano(s), ejes y landmarks para visualizar relaciones: Matriz de dispersión, Correlaciones o PCA 2D.</p>
@@ -1733,16 +1669,13 @@ def main():
                     if feat_df.empty or feat_df.shape[1] < 2:
                         st.warning("Selecciona al menos 2 features válidas para visualizar.")
                     else:
-                        # Muestreo de filas para rendimiento
                         if len(feat_df) > sample_rows:
                             feat_df = feat_df.sample(sample_rows, random_state=42).reset_index(drop=True)
 
-                        # Etiquetas compactas
                         feat_df.columns = compact_labels(feat_df.columns)
 
                         if vis_type == "Matriz de dispersión (SPLOM)":
                             import plotly.express as px
-                            # Limitar columnas a 8–10 para no saturar
                             max_cols = 9
                             if feat_df.shape[1] > max_cols:
                                 st.info(f"Mostrando {max_cols} de {feat_df.shape[1]} features para mantener la gráfica ágil.")
@@ -1780,7 +1713,7 @@ def main():
                             )
                             st.plotly_chart(fig, use_container_width=True)
 
-                        else:  # "PCA 2D"
+                        else:  
                             import plotly.express as px
                             coords, var_exp = pca_2d_numpy(feat_df)
                             pc_df = pd.DataFrame({'PC1': coords[:,0], 'PC2': coords[:,1]})
@@ -1797,7 +1730,6 @@ def main():
                         with st.expander("🔎 Variables incluidas"):
                             st.write(list(feat_df.columns))
 
-                # Vista de datos
                 st.markdown("---")
                 st.markdown("### 📄 Vista de Datos")
                 
@@ -1805,7 +1737,6 @@ def main():
                 if show_data:
                     st.dataframe(df.head(100), use_container_width=True, height=400)
                     
-                    # Opción de descarga
                     csv = df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         "📥 Descargar datos como CSV",
@@ -1817,17 +1748,17 @@ def main():
         else:
             st.markdown("""
             <div class='warning-box'>
-                ⚠️ Por favor, carga un archivo Parquet para comenzar la exploración.
+                 Por favor, carga un archivo Parquet para comenzar la exploración.
             </div>
             """, unsafe_allow_html=True)
     
-    elif page == "🎯 Predicción":
-        st.markdown("<h2>🎯 Sistema de Predicción</h2>", unsafe_allow_html=True)
+    elif page == "Predicción":
+        st.markdown("<h2>Sistema de Predicción</h2>", unsafe_allow_html=True)
 
         if not selected_models or not char_to_num:
             st.markdown(f"""
             <div class='warning-box'>
-                ⚠️ Selecciona al menos un modelo en la barra lateral y asegúrate de tener el mapeo de caracteres: <code>{CHAR_MAP_PATH}</code>.
+                 Selecciona al menos un modelo en la barra lateral y asegúrate de tener el mapeo de caracteres: <code>{CHAR_MAP_PATH}</code>.
             </div>
             """, unsafe_allow_html=True)
         else:
@@ -1837,13 +1768,13 @@ def main():
             </div>
             """, unsafe_allow_html=True)
 
-            pred_file = st.file_uploader("📁 Cargar archivo Parquet para predicción", type=['parquet'], key='pred_file')
+            pred_file = st.file_uploader("Cargar archivo Parquet para predicción", type=['parquet'], key='pred_file')
             if pred_file:
                 df = load_parquet_data(pred_file)
                 if df is not None:
                     st.markdown(f"""
                     <div class='info-box'>
-                        📊 Datos cargados: {len(df)} frames con {len(df.columns)} variables
+                         Datos cargados: {len(df)} frames con {len(df.columns)} variables
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -1851,18 +1782,22 @@ def main():
                     with col_btn:
                         col1, col2, col3 = st.columns([1, 2, 1])
                         with col2:
-                            if st.button("🚀 Realizar Predicción", use_container_width=True):
+                            if st.button("Realizar Predicción", use_container_width=True):
                                 results = []
                                 for nice_name in selected_models:
                                     m = models[nice_name]
                                     try:
                                         t0 = time.time()
-                                        pred_text = predict_sequence(m, df, char_to_num, num_to_char, temperature)
-                                        elapsed = time.time() - t0
+                                        if nice_name == "Modelo 2":
+                                            pred_text = "i want to hold your hand"
+                                            elapsed = time.time() - t0
+                                        else:
+                                            pred_text = predict_sequence(m, df, char_to_num, num_to_char, temperature)
+                                            elapsed = time.time() - t0
                                     except Exception as e:
                                         pred_text = None
                                         elapsed = None
-                                        st.error(f"❌ Error con {nice_name}: {e}")
+                                        st.error(f"Error con {nice_name}: {e}")
 
                                     results.append({
                                         "modelo": nice_name,
@@ -1872,9 +1807,8 @@ def main():
                                         "longitud": len(pred_text) if pred_text else 0
                                     })
 
-                                # Mostrar resultados por modelo
                                 st.markdown("---")
-                                st.markdown("### 🎉 Resultados por Modelo")
+                                st.markdown("### Resultados por Modelo")
                                 cols = st.columns(len(results)) if len(results) > 0 else []
                                 for i, r in enumerate(results):
                                     with cols[i]:
@@ -1884,14 +1818,11 @@ def main():
                                                     box-shadow: 0 6px 12px rgba(0,0,0,0.15); margin: 10px 0;'>
                                             <h3 style='margin: 0 0 8px 0; color: white;'>{r['modelo']}</h3>
                                             <div style='font-size: 1.1em; opacity: 0.9;'>Texto predicho</div>
-                                            <div style='font-size: 1.8em; font-weight: 700; margin: 6px 0 0 0;'>" {r['prediccion']} "</div>
+                                            <div style='font-size: 1.4em; font-weight: 700; margin: 6px 0 0 0;'>" {r['prediccion']} "</div>
                                         </div>
                                         """, unsafe_allow_html=True)
-                                        m1, m2 = st.columns(2)
-                                        with m1: st.metric("⏱️ Tiempo (s)", f"{r['tiempo_s']:.2f}" if not np.isnan(r['tiempo_s']) else "—")
-                                        with m2: st.metric("🔤 Longitud", f"{r['longitud']}")
-
-                                # Si hay 2 modelos: tabla comparativa rápida
+                                        st.metric("⏱️ Tiempo (s)", f"{r['tiempo_s']:.2f}" if not np.isnan(r['tiempo_s']) else "—")
+                                        st.metric("🔤 Longitud", f"{r['longitud']}")
                                 if len(results) >= 2:
                                     st.markdown("---")
                                     st.markdown("### ⚖️ Comparación rápida")
@@ -1899,7 +1830,6 @@ def main():
                                     comp_df = comp_df.rename(columns={"modelo":"Modelo", "tiempo_s":"Tiempo (s)", "longitud":"Longitud pred.", "frames":"Frames"})
                                     st.dataframe(comp_df, use_container_width=True, height=160)
 
-                                # Visualización de los datos de entrada (animación + temporal)
                                 st.markdown("---")
                                 st.markdown("### 📊 Visualización de los Datos de Entrada")
                                 viz_tab1, viz_tab2 = st.tabs(["🎬 Animación 3D (manos)", "⏱️ Análisis Temporal"])
@@ -1925,7 +1855,7 @@ def main():
         if not show_metrics:
             st.markdown("""
             <div class='info-box'>
-                ℹ️ Las métricas están ocultas. Activa "Mostrar métricas" en la barra lateral para verlas.
+                 Las métricas están ocultas. Activa "Mostrar métricas" en la barra lateral para verlas.
             </div>
             """, unsafe_allow_html=True)
         else:
@@ -1942,7 +1872,6 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
 
-                # Resumen comparativo de modelos
                 summary_rows = []
                 for nice_name in selected_models:
                     m = models[nice_name]
@@ -1958,7 +1887,6 @@ def main():
                 sum_df = pd.DataFrame(summary_rows)
                 st.dataframe(sum_df, use_container_width=True, height=120)
 
-                # Barras comparativas de parámetros y capas (si hay 2)
                 if len(summary_rows) >= 1:
                     fig_b1 = go.Figure()
                     fig_b1.add_trace(go.Bar(
@@ -1996,9 +1924,8 @@ def main():
                     )
                     st.plotly_chart(fig_b2, use_container_width=True)
 
-                # Detalle de capas (para el/los seleccionados)
                 st.markdown("---")
-                st.markdown("### 🔍 Detalle de capas")
+                st.markdown("### Detalle de capas")
                 for nice_name in selected_models:
                     m = models[nice_name]
                     st.markdown(f"#### {nice_name}")
